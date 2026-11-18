@@ -430,7 +430,7 @@ async function V(){
  let cards=t.map(o=>{let d2=dn.get(o.departmentId),dl=d2?d2.code||d2.name:"";
   let c=e("a",{class:"em-card",href:`#/employees/${o.id}`},AV(o,72),e("div",{class:"em-nm"},e("span",{class:"n"},o.fullName),e("span",{class:"small muted"},o.jobTitle||"")),
    e("div",{class:"em-tags"},dl?e("span",{class:"em-dept",title:d2.name},dl):null,e("span",{class:`ap-tag ${EMS[o.employmentStatus]||""}`},R[o.employmentStatus]||o.employmentStatus)),
-   e("div",{class:"em-foot"},e("span",{},o.employeeCode||""),e("span",{},o.hireDate?`Since ${o.hireDate.slice(0,4)}`:"")));
+   e("div",{class:"em-foot"},e("span",{},o.employeeCode||""),e("span",{},o.hireDate?`Since ${["January","February","March","April","May","June","July","August","September","October","November","December"][Number(o.hireDate.slice(5,7))-1]} ${o.hireDate.slice(0,4)}`:"")));
   c.dataset.q=`${o.fullName} ${o.employeeCode||""} ${o.jobTitle||""}`.toLowerCase();c.dataset.st=o.employmentStatus;c.dataset.dp=o.departmentId||"";return c});
  let grid=e("section",{class:"em-grid"}),q=e("input",{type:"search",placeholder:"Search by name, ID or job title","aria-label":"Search employees"}),
   ds=b("dept",[["","All departments"],...n.map(d2=>[d2.id,d2.name])],{}),fil="CUR",chips=[];
