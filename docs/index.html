@@ -518,7 +518,7 @@ function M(t=""){let n=e("input",{type:"email",name:"email",autocomplete:"email"
  w(L,j("Sign in","We'll email you a 6-digit code. No password needed.",r)),n.focus()}
 function K(t,n){
  let boxes=[...Array(6)].map((_,i)=>e("input",{inputmode:"numeric",autocomplete:i===0?"one-time-code":"off",maxlength:6,class:"si-d","aria-label":`Digit ${i+1}`}));
- let r=e("input",{type:"checkbox",name:"remember",checked:!0}),a=e("button",{type:"submit",class:"btn primary wide si-btn"},"Sign in");
+ let a=e("button",{type:"submit",class:"btn primary wide si-btn"},"Sign in");
  let code=()=>boxes.map(b2=>b2.value).join("");
  let fill=(start,str)=>{let ds=str.replace(/\D/g,"").split("");ds.forEach((d,k2)=>{boxes[start+k2]&&(boxes[start+k2].value=d)});let nx=Math.min(start+ds.length,5);boxes[nx].focus();code().length===6&&l.requestSubmit()};
  boxes.forEach((b2,i)=>{b2.addEventListener("input",()=>{let v=b2.value.replace(/\D/g,"");if(v.length>1){b2.value="";fill(i,v);return}b2.value=v;v&&i<5&&boxes[i+1].focus();code().length===6&&l.requestSubmit()});
@@ -529,9 +529,9 @@ function K(t,n){
  let tick=()=>{if(!rs.isConnected){clearInterval(tm);return}left--,left<=0?(clearInterval(tm),rs.disabled=!1,rs.textContent="Resend code"):rs.textContent=`Resend in 0:${String(left).padStart(2,"0")}`};
  let start=()=>{left=60,rs.disabled=!0,rs.textContent="Resend in 1:00",clearInterval(tm),tm=setInterval(tick,1e3)};
  rs.addEventListener("click",()=>{rs.disabled=!0,rs.textContent="Sending…",u("auth.requestCode",{email:t}).then(()=>{f("ok","A new code is on its way."),start()}).catch(x2=>{f("error",C(x2)),rs.disabled=!1,rs.textContent="Resend code"})});
- let l=e("form",{class:"stack",style:"gap:18px"},e("fieldset",{class:"si-fs"},e("legend",{},"Code"),e("div",{class:"si-digits"},...boxes)),e("label",{class:"check"},r,"Keep me signed in on this device for 7 days"),a,e("div",{class:"si-row"},e("span",{class:"muted"},"Didn't get it? Check spam."),rs));
+ let l=e("form",{class:"stack",style:"gap:18px"},e("fieldset",{class:"si-fs"},e("legend",{},"Code"),e("div",{class:"si-digits"},...boxes)),a,e("div",{class:"si-row"},e("span",{class:"muted"},"Didn't get it? Check spam."),rs));
  let busy=!1;
- l.addEventListener("submit",o=>{o.preventDefault();if(busy)return;let c2=code();if(c2.length!==6){f("error","Enter all 6 digits.");boxes[c2.length].focus();return}busy=!0,H(a,!0,"Signing in…"),u("auth.verifyCode",{email:t,code:c2,remember:r.checked}).then(i=>(clearInterval(tm),T.set(i.token),Y())).catch(i=>{busy=!1,f("error",C(i)),H(a,!1,"Sign in"),boxes.forEach(b2=>b2.value=""),boxes[0].focus()})});
+ l.addEventListener("submit",o=>{o.preventDefault();if(busy)return;let c2=code();if(c2.length!==6){f("error","Enter all 6 digits.");boxes[c2.length].focus();return}busy=!0,H(a,!0,"Signing in…"),u("auth.verifyCode",{email:t,code:c2,remember:!1}).then(i=>(clearInterval(tm),T.set(i.token),Y())).catch(i=>{busy=!1,f("error",C(i)),H(a,!1,"Sign in"),boxes.forEach(b2=>b2.value=""),boxes[0].focus()})});
  let back=e("a",{href:"#",class:"si-back",onclick:o=>{o.preventDefault(),clearInterval(tm),M(t)}},"← Use a different email");
  let sub=e("span",{},"We sent a 6-digit code to ",e("b",{style:"color:var(--ink)"},t),". It expires in 10 minutes.");
  w(L,j("Check your inbox",sub,l,back)),start(),boxes[0].focus()}
