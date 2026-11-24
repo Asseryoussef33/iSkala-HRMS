@@ -321,7 +321,17 @@ async function LV(id,yr){
    ad=e("input",{name:"days",type:"number",step:"0.5",required:!0,placeholder:"2 or -2"}),
    af=e("form",{class:"row wrap"},m("Leave type",at),m("Days to add or remove",ad),e("button",{type:"submit",class:"btn"},"Adjust balance"));
   af.addEventListener("submit",ev=>{ev.preventDefault(),E(async()=>{let why=await D("Adjust balance",`Change ${LTL[at.value]} leave for ${d.employee.fullName} in ${d.year} by ${ad.value} day(s).`);why&&(await u("leave.adjust",{employeeId:d.employee.id,type:at.value,year:d.year,days:Number(ad.value),reason:why}),f("ok","Balance adjusted."),await reload())})});
-  parts.push(e("details",{class:"card"},e("summary",{},"Adjust balance (HR)"),e("p",{class:"muted small"},"Use a negative number to remove days. Every adjustment is saved in the audit log."),af))}
+  let rt=b("type",d.balances.map(x2=>[x2.type,LTL[x2.type]||x2.label]),{required:!0}),
+   rsd=e("input",{name:"startDate",type:"date",required:!0,max:k()}),
+   red=e("input",{name:"endDate",type:"date",required:!0}),
+   rlive=e("p",{class:"muted small",hidden:!0,role:"status",style:"margin:8px 0 0"}),
+   rf=e("form",{class:"row wrap"},m("Leave type",rt),m("From",rsd),m("To",red),e("button",{type:"submit",class:"btn"},"Record leave"));
+  let rupd=()=>{let n=LVCOUNT(d.calendar,rt.value,rsd.value,red.value);if(n==null){rlive.hidden=!0;return}rlive.hidden=!1;rlive.textContent=n===0?"Those dates have no working days.":`This takes ${n} day${n===1?"":"s"} off the ${(LTL[rt.value]||"").toLowerCase()} balance.`};
+  rsd.addEventListener("change",()=>{(!red.value||red.value<rsd.value)&&(red.value=rsd.value),red.min=rsd.value,rupd()});red.addEventListener("change",rupd);rt.addEventListener("change",rupd);
+  rf.addEventListener("submit",ev=>{ev.preventDefault(),E(async()=>{let why=await D("Record past leave",`Record ${LTL[rt.value]} for ${d.employee.fullName} from ${rsd.value} to ${red.value}. It will be saved as approved leave and taken off the balance.`);why&&(await u("leave.record",{employeeId:d.employee.id,type:rt.value,startDate:rsd.value,endDate:red.value,reason:why}),f("ok","Leave recorded."),await reload())})});
+  parts.push(e("details",{class:"card"},e("summary",{},"Adjust balance (HR)"),
+   e("h3",{style:"margin:12px 0 4px"},"Record past leave"),e("p",{class:"muted small"},"For leave an employee already took but forgot to request. Pick the dates and it is saved as approved leave. Weekends and public holidays are not counted."),rf,rlive,
+   e("h3",{style:"margin:20px 0 4px"},"Add or remove days"),e("p",{class:"muted small"},"Use a negative number to remove days. Every adjustment is saved in the audit log."),af))}
  w(L,x(mine?"Leave / Permissions / WFH":"Employees",hd,...LTABS(d,parts,PBLOCK(d,reload),WBLOCK(d,reload))))}
 function LTABS(d,lp,pb,wb){
  let pend=a=>(a||[]).filter(r=>r.status==="PENDING").length,pm=d.permissions,wf=d.wfh;
